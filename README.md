@@ -23,10 +23,14 @@ line.set.symbol( "square" );
 // specify interval of scale values
 line.set.interval( 10 );
 
-// set top, left, bottom title
-line.set.titleTop( "Average + Maximum Wind Speed" );
+// set left title
 line.set.titleLeft( "mph" );
-line.set.titleBottom( [ "April 1", "April 2", "April 3", "April 4" ] );
+
+// set top title
+line.set.titleTop( "Average + Maximum Wind Speed" );
+
+// set bottom label
+line.set.label( [ "April 1", "April 2", "April 3", "April 4" ] );
 
 // render image and append to DOM
 var png = line.render();
@@ -34,26 +38,3 @@ document.body.appendChild( png );
 ```
 
 ![graph.png](graph.png)
-
-API
----
-```javascript
-get.width()
-get.height()
-get.dataset()
-get.color()
-get.symbol()
-get.max()
-get.min()
-get.interval()
-get.titleTop()
-get.titleLeft()
-get.titleBottom()
-
-set.color( String )
-set.symbol( String )
-set.interval( Number )
-set.titleTop( String )
-set.titleLeft( String )
-set.titleBottom( Array )
-```

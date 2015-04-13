@@ -4,19 +4,21 @@ window.Graph = function ( width, height ) {
     var dataset = [];
     var color = [];
     var symbol = [];
+    var label = [];
+    var index = -1;
     var max = 0;
     var min = 0;
-    var index = -1;
     var interval = 10;
     var titleTop = "";
     var titleLeft = "";
-    var titleBottom = [];
+    var titleBottom = "";
     this.get = {
         width: function () { return width; },
         height: function () { return height; },
         dataset: function () { return dataset; },
         color: function () { return color; },
         symbol: function () { return symbol; },
+        label: function () { return label; },
         max: function () { return max; },
         min: function () { return min; },
         interval: function () { return interval; },
@@ -27,10 +29,11 @@ window.Graph = function ( width, height ) {
     this.set = {
         color: function ( string ) { prototypeof.String( string ) && ( string !== "" ) && ( color[index] = string ); },
         symbol: function ( string ) { prototypeof.String( string ) && ( string !== "" ) && ( symbol[index] = string ); },
+        label: function ( sequence ) { prototypeof.Array( sequence ) && sequence.length && ( label = sequence ); },
         interval: function ( number ) { prototypeof.Number( number ) && ( number > 0 ) && ( interval = number ); },
         titleTop: function ( string ) { prototypeof.String( string ) && ( titleTop = string ); },
         titleLeft: function ( string ) { prototypeof.String( string ) && ( titleLeft = string ); },
-        titleBottom: function ( sequence ) { prototypeof.Array( sequence ) && sequence.length && ( titleBottom = sequence ); }
+        titleBottom: function ( string ) { prototypeof.String( string ) && ( titleBottom = string ); }
     };
     this.plot = function ( data ) {
         if ( !prototypeof.Array( data ) ) return;

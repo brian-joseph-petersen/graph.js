@@ -5,16 +5,16 @@ window.Graph.prototype.render = function () {
     if ( !dataset.length ) return;
     var h, w, x, y, z;
     var data, index, len;
-    var bottom, ceiling, floor, img, render;
+    var top, bottom, ceiling, floor, img, render;
     var axis = {}, base = {}, grid = {}, value = {};
     var width = this.get.width();
     var height = this.get.height();
     var color = this.get.color();
     var symbol = this.get.symbol();
+    var label = this.get.label();
     var max = this.get.max();
     var min = this.get.min();
     var interval = this.get.interval();
-    var metadata = this.get.titleBottom();
     var margin = 36;
     var padding = 4;
     var stroke = 2;
@@ -34,13 +34,13 @@ window.Graph.prototype.render = function () {
     render.lineWidth = stroke;
     render.font = ( "bold " + large + "px " + font );
     render.textAlign = "center";
-    // render top title
-    x = ( width * 0.5 );
-    y = ( margin - large );
-    render.fillText( this.get.titleTop(), x, y );
-    // set floor and ceiling
-    floor = ( min % interval ) ? ( min < 0 ) ? ( ~~ ( ( min - interval ) / interval ) * interval ) : ( ~~ ( ( min + interval ) / interval ) * interval ) : min;
-    ceiling = ( max % interval ) ? ( ~~ ( ( max + interval ) / interval ) * interval ) : max;
+    // set floor
+    if ( min % interval ) {
+        if ( min < 0 ) floor = ( ~~( ( min - interval ) / interval ) * interval );
+        else floor = ( ~~( ( min + interval ) / interval ) * interval );
+    } else floor = min;
+    // set ceiling
+    ceiling = ( max % interval ) ? ( ~~( ( max + interval ) / interval ) * interval ) : max;
     // set axes
     axis.x = ( dataset[0].length - 1 );
     axis.y = ( (-floor) + ceiling );
@@ -50,9 +50,10 @@ window.Graph.prototype.render = function () {
     grid.x = ( width - margin - margin - stroke - padding - padding - padding - padding - stroke - margin - margin );
     grid.y = ( height - margin - margin );
     // grid scaling
-    value.x = function ( number ) { return ( number === 0 ) ? number : ( ( number / axis.x ) * grid.x ); };
-    value.y = function ( number ) { return ( number === 0 ) ? number : ( ( number / axis.y ) * grid.y ); };
-    // set bottom position
+    value.x = function ( n ) { return ( n === 0 ) ? n : ( ( n / axis.x ) * grid.x ); };
+    value.y = function ( n ) { return ( n === 0 ) ? n : ( ( n / axis.y ) * grid.y ); };
+    // set top and bottom position
+    top = ( margin - large );
     bottom = round( base.y + padding + padding + small );
     // render x-axis stroke
     render.beginPath();
@@ -63,6 +64,10 @@ window.Graph.prototype.render = function () {
     render.lineTo( x, y );
     render.stroke();
     render.closePath();
+    // render top and bottom title
+    x = ( width * 0.5 );
+    render.fillText( this.get.titleTop(), x, top );
+    render.fillText( this.get.titleBottom(), x, bottom );
     // render left title
     x = ( margin - large );
     y = ( margin + ( grid.y * 0.5 ) );
@@ -81,9 +86,8 @@ window.Graph.prototype.render = function () {
     render.stroke();
     render.closePath();
     // adjust y-axis
-    grid.y -= small;
-    ( min < 0 ) && ( grid.y -= small );
-    ( min < 0 ) && ( base.y += value.y( floor ) - small );
+    grid.y -= ( small + small );
+    base.y += ( value.y( floor ) - small );
     // adjust font-size
     render.font = ( small + "px " + font );
     // render interval text
@@ -91,8 +95,7 @@ window.Graph.prototype.render = function () {
     y = round( base.y - grid.y );
     render.textAlign = "right";
     for ( z = floor; z <= ceiling; z += interval ) {
-        if ( z === 0 ) continue;
-        y = ( z > 0 ) ? round( base.y - value.y( z ) ) : round( base.y - value.y( z ) + padding + padding );
+        y = round( base.y - value.y( z ) );
         render.fillText( z, x, y );
     } render.textAlign = "center";
     // render horizontal grid
@@ -101,7 +104,7 @@ window.Graph.prototype.render = function () {
     for ( z = ( floor + interval ); z <= ceiling; z += interval ) {
         render.beginPath();
         x = base.x;
-        y = ( z > 0 ) ? round( base.y - value.y( z ) ) : round( base.y - value.y( z ) + padding + padding );
+        y = round( base.y - value.y( z ) );
         render.moveTo( x, y );
         x = ( base.x + grid.x );
         render.lineTo( x, y );
@@ -109,14 +112,11 @@ window.Graph.prototype.render = function () {
         render.closePath();
     } render.setLineDash( [] );
     render.strokeStyle = nero;
-    // adjust y-axis
-    grid.y += small;
-    ( min < 0 ) && ( grid.y += small );
-    // render bottom title
-    for ( index = 0, len = metadata.length; index < len; index++ ) {
-        if ( !prototypeof.String( metadata[index] ) ) continue;
+    // render label text
+    for ( index = 0, len = label.length; index < len; index++ ) {
+        if ( !prototypeof.String( label[index] ) ) continue;
         x = round( base.x + value.x( index ) );
-        render.fillText( metadata[index], x, bottom );
+        render.fillText( label[index], x, bottom );
     }
     // graph data
     x = []; y = [];

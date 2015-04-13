@@ -1,1 +1,1 @@
-function round( number ) { return ~~( number + 0.5 ); }
+function round( n ) { return ~~( n + 0.5 ); }
